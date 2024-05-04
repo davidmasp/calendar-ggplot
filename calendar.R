@@ -66,7 +66,7 @@ for (year in year_vec){
            df[nrow(df):(nrow(df)-10),]$week)
   
   mw = max(df$week)
-  week_fct = factor(glue::glue("w{df$week}"), 
+  df$week_fct = factor(glue::glue("w{df$week}"), 
                     levels = glue::glue("w{mw:0}"))
   
   pdf(NULL)
@@ -97,4 +97,31 @@ for (year in year_vec){
     dpi = 400,
     width = 8.3, height = 10.5
   )
+  
+  ggplot(data =  subset(df, quarter == "Q4"),
+         aes(x = weekday, y = week_fct)
+  ) + 
+    geom_tile(color = "black", size = .5, fill = "white") + 
+    geom_text(aes(label = day), size = 2, 
+              family = "Montserrat", nudge_x = -.4, nudge_y = .2) + 
+    facet_wrap(month~., scales = "free", ncol=1) + 
+    theme_minimal() +
+    theme(axis.title = element_blank(),
+          panel.grid = element_blank(),
+          plot.background = element_rect(linetype = "solid"),
+          legend.position = "none",
+          axis.text = element_text(family = "Montserrat"),
+          strip.text = element_text(size = 12, face = "bold",hjust = 0,
+                                    family = "SF Pro Display")) 
+  
+  output_fn = glue::glue("calendars/calendar_{year}_Q4.png")
+  
+  ggsave(
+    output_fn,
+    dpi = 400,
+    units = "mm",
+    width = 130,
+    height = 190
+  )
+
 }
